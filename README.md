@@ -2,7 +2,7 @@
 
 A local Twitch stream companion for Cat Girl’s faculty office. Real Twitch chat ingestion is implemented using EventSub WebSockets, with a separate transparent browser overlay, Director dashboard, and compact chat digest. Vanilla Node.js ES modules keep setup dependency-free. Node 22.16+ is required; tested on Node 24.22.1.
 
-**Status:** real Twitch `!hello` reached EventSub and the Director confirmed the visible greeting on October 31 at 10:15:46 AM Pacific. New CAT CHAOS commands are implemented and preview-tested in isolated mode, pending activation on port 3000. Chat replies failed in the original running version; the user-token payload fix is regression-tested but awaits live retesting. Sebastian voice is an incomplete enhancement. Do not present preview footage as Twitch evidence. See `docs/CAT-CHAOS-UPDATE.md`.
+**Status:** real Twitch `!hello` reached EventSub and the Director confirmed the visible greeting on October 31 at 10:15:46 AM Pacific. CAT CHAOS commands are implemented, preview-tested, and activated on port 3000; EventSub resubscribed at 10:31:12 AM with saved authorization. Chat replies failed in the original version; the activated user-token payload fix is regression-tested but awaits live retesting. Subscription notifications await optional Twitch consent. Sebastian voice is an incomplete enhancement. Do not present preview footage as Twitch evidence. See `docs/CAT-CHAOS-UPDATE.md`.
 
 ## Start
 

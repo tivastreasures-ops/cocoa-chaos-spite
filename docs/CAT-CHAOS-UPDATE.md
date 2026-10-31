@@ -1,5 +1,11 @@
 # CAT CHAOS update — October 31, 2026
 
+## Activation completed
+
+The Director approved one brief reconnect. The updated production server started at **10:31:11 AM Pacific** and restored its EventSub chat subscription at **10:31:12 AM** using the saved `mermaidtiva` authorization. The live dashboard and overlay were reloaded; the running-cat preview reached the activated overlay. New commands and the reply correction still need post-update real-chat testing. In-memory counters reset on restart; this does not invalidate the earlier recorded live greeting. Subscription notifications currently report **additional authorization required**. The Director approved preparing the consent link: `http://localhost:3000/auth/twitch?subscriptions=1`. No additional Twitch grant has been claimed.
+
+The staging/activation instructions below describe the preparation history and remain useful for subsequent updates; this version is now activated on port 3000.
+
 ## Working live evidence
 
 At 10:15:46 AM Pacific, the port-3000 app received MermaidTiva’s actual Twitch `!hello`. Diagnostics advanced from zero to one real message, and the Director replied “yes i see the greeting.” This verifies the real chat → EventSub → visible greeting path. This was the broadcaster’s test, not an ordinary-viewer permission test. No other new effect or subscription notification is live-verified.

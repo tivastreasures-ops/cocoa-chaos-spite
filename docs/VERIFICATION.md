@@ -1,5 +1,7 @@
 # Verification ledger
 
+**Activation update:** October 31 at 10:31:12 AM Pacific, the new production backend restored EventSub using the existing authorization after the Director-approved restart. Dashboard and overlay assets were refreshed, and a running-cat preview reached the production overlay. New real-chat commands, corrected replies and optional subscription consent remain pending. Earlier zero/one counters were in-memory and reset on restart.
+
 Do not confuse mocked protocol tests or local previews with real Twitch integration.
 
 ## Phase 1 — OAuth and Twitch ingestion
