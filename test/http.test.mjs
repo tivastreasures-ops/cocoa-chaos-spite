@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 test('running HTTP app isolates controls and exposes only read-only overlay transport',async()=>{
- const origin='http://localhost:3000';const home=await fetch(origin);assert.equal(home.status,200);const cookie=home.headers.get('set-cookie').split(';')[0];
+ const origin=process.env.CC_TEST_ORIGIN||'http://localhost:3001';const home=await fetch(origin);assert.equal(home.status,200);const cookie=home.headers.get('set-cookie').split(';')[0];
  const s=await (await fetch(origin+'/api/status',{headers:{Cookie:cookie}})).json();assert.ok(s.csrf);assert.equal(JSON.stringify(s).includes('access_token'),false);
  assert.equal((await fetch(origin+'/api/status')).status,403);
  assert.equal((await fetch(origin+'/api/preview',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:'{"effect":"cocoa"}'})).status,403);

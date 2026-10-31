@@ -38,7 +38,7 @@ export class Auth {
     if(!r.ok) throw Error(`Twitch validation failed (${r.status})`);
     const a=await r.json();
     if(a.client_id!==this.clientId||!/^\d+$/.test(a.user_id)||!scopes.every(s=>a.scopes?.includes(s))) throw Error('Wrong account grant or missing chat scopes; reconnect');
-    this.account={id:a.user_id,login:a.login}; return this.account;
+    this.account={id:a.user_id,login:a.login};this.grantedScopes=a.scopes;return this.account;
   }
   async api(path,body,retry=true) {
     if(!this.tokens) throw Error('Connect Twitch first');
@@ -49,7 +49,11 @@ export class Auth {
   }
   async reply(message) {
     if(!this.account) throw Error('Connect Twitch first');
-    const result=await this.api('chat/messages',{broadcaster_id:this.account.id,sender_id:this.account.id,message,for_source_only:true});
+    // Twitch rejects for_source_only with User Access Tokens. Suppress replies
+    // during Shared Chat instead of risking delivery into other channels.
+    const shared=await this.api(`shared_chat/session?broadcaster_id=${this.account.id}`);
+    if(!Array.isArray(shared.data)||shared.data.length)throw Error('Chat reply suppressed: Shared Chat is active or could not be verified');
+    const result=await this.api('chat/messages',{broadcaster_id:this.account.id,sender_id:this.account.id,message});
     if(!result.data?.[0]?.is_sent) throw Error('Twitch did not send the reply (possibly held or rate limited)');
     return result.data[0].message_id;
   }

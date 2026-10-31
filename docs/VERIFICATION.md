@@ -8,17 +8,17 @@ Implemented: installed broadcaster flow, exact registered callback, two scopes, 
 
 Exercised: mocked token concurrency and bounded 401 retry; mocked EventSub subscription, frame deduplication, invalid data and revocation. Local HTTP rejects forged OAuth callbacks and unauthorized dashboard access.
 
-**NOT VERIFIED:** actual OAuth consent, real access/refresh token exchange, Twitch subscription acceptance and receipt of real messages. No app credentials were available.
+**LIVE VERIFIED:** broadcaster account `mermaidtiva` is authorized and the real chat listener is subscribed. Real `!hello` received at 2026-10-31 10:15:46 AM Pacific; the Director explicitly confirmed seeing the greeting. Tokens were not printed or inspected. Real token refresh and outage recovery remain unverified.
 
 ## Phase 2 — Commands and overlay
 
 Automated checks verify viewer permissions, both public commands, restricted chaos, preview isolation, structured events, and local HTTP → SSE delivery. Browser checks verify preview greeting/cocoa/chaos appearance, 5.5-second cleanup, and cooldown feedback. These are local previews, not Twitch evidence.
 
-**NOT VERIFIED:** actual Twitch chat → overlay or chat API reply delivery; PRISM capture.
+**LIVE VERIFIED:** real Twitch `!hello` → EventSub → visible greeting (Director confirmation). **NOT VERIFIED:** ordinary-viewer live permissions, live cocoa and other effects, chat API replies, or PRISM capture. The original running build’s reply failed; the corrected payload is tested in code and not yet activated/live-tested.
 
 ## Phase 3 — Reliability and diagnostics
 
-Ten automated tests pass on Node 24.22.1 (October 31, 2026). Tests cover command permissions/cooldowns, malformed/cross-channel data, digest/manual approval, event envelopes, serialized refresh, migration without duplicate subscription, revocation, voice approval boundaries, local HTTP security and SSE. Dashboard shows actual/preview counts separately. Mocked EventSub migration and retry scheduling pass; real network outage behavior still needs live testing.
+Twenty automated tests pass on Node 24.22.1 (October 31, 2026). New coverage includes verified subscriber/founder versus moderator roles, hydration cooldown boundaries, new-subscription fixtures and duplicate suppression, optional-listener failure isolation, bounded overlay queuing/cleanup, and the user-token reply regression. Browser checks exercised hydration, marshmallow cats, running cat, flail, calculator, and automatic removal in the isolated sandbox. An initial browser timer-binding failure was fixed and cleanup was rechecked. Mocked events are not live event verification.
 
 ## Phase 4 — Sebastian
 
@@ -26,7 +26,7 @@ Authenticated local tool contract and Director approval UI implemented. No Eleve
 
 ## Phase 5 — Submission
 
-Source, setup, phase ledger, demo shot list, and submission draft prepared. Official competition overview/rules reviewed. Public repository, actual Twitch evidence, Codex session ID, recorded demo, and final submission are pending.
+Source, setup, phase ledger, demo shot list, and submission draft prepared. Official competition overview/rules reviewed. One real greeting is confirmed; demo recording, public repository, Codex session ID, and final submission remain pending. CAT CHAOS update is staged while the existing port-3000 process stays connected; activation needs one controlled restart and overlay reload.
 
 ## Account-backed acceptance checklist (fill with actual timestamps)
 

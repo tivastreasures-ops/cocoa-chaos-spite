@@ -20,8 +20,8 @@ test('global and viewer cooldowns; previews never send real chat replies',async(
 });
 test('invalid and cross-channel events are rejected; only moderator and broadcaster qualify',()=>{
  for(const e of [null,{}, {...chat,broadcaster_user_id:'3'},{...chat,message:null},{...chat,source_broadcaster_user_id:'99'}])assert.equal(parseChat(e,'1'),null);
- assert.equal(parseChat({...chat,badges:[{set_id:'subscriber'}]},'1').privileged,false);
- assert.equal(parseChat({...chat,badges:[{set_id:'moderator'}]},'1').privileged,true);
+ assert.equal(parseChat({...chat,badges:[{set_id:'subscriber',id:'1'}]},'1').privileged,false);
+ assert.equal(parseChat({...chat,badges:[{set_id:'moderator',id:'1'}]},'1').privileged,true);
  assert.equal(parseChat({...chat,chatter_user_id:'1'},'1').privileged,true);
  assert.equal(parseChat({...chat,message:{text:'hello\u0000world'}},'1').text,'helloworld');
 });

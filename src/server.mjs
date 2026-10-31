@@ -3,22 +3,25 @@ import {readFile} from 'node:fs/promises';
 import {randomBytes,timingSafeEqual} from 'node:crypto';
 import {EventEmitter} from 'node:events';
 import {join} from 'node:path';
-import {root,origin,redirect,scopes,canvas} from './config.mjs';
+import {root,origin,redirect,scopes,subscriptionScope,canvas,port,previewOnly} from './config.mjs';
 import {Auth} from './auth.mjs';
-import {Commands} from './commands.mjs';
+import {Commands,effects} from './commands.mjs';
+import {SubscriptionEffects} from './subscriptions.mjs';
 import {Transport,event,clean} from './events.mjs';
 import {Assistant} from './assistant.mjs';
 import {Twitch} from './twitch.mjs';
 import {createVoiceBridge} from './voice.mjs';
-const auth=new Auth();await auth.init();
+const auth=new Auth();if(!previewOnly)await auth.init();
 const transport=new Transport(),assistant=new Assistant(),logs=[],pendingVoice=[];
 // Internal integration bus keeps chat context off the public overlay feed.
 export const integrationBus=new EventEmitter();
 const admin=randomBytes(32).toString('hex');
 function log(message){logs.push({time:new Date().toISOString(),message});if(logs.length>40)logs.shift();console.log(new Date().toISOString(),message);}
 const commands=new Commands(e=>{integrationBus.emit(e.type,e);if(e.type==='stream.overlay.effect')transport.emit(e);},message=>auth.reply(message));
+const previews=new Commands(e=>{if(e.type==='stream.overlay.effect')transport.emit(e);},async()=>{});
+const subscriptions=new SubscriptionEffects(commands);let subscriptionCount=0,lastSubscription=null;
 let lastChat=null,liveCount=0,previewCount=0;
-const twitch=new Twitch(auth,async m=>{lastChat={name:m.name,text:m.text,time:new Date().toISOString()};liveCount++;assistant.add(m);integrationBus.emit('stream.chat.received',event('stream.chat.received','twitch',{id:m.id,name:m.name,text:m.text}));log('Real Twitch chat received');try{const result=await commands.handle(m);if(result!=='ignored')log(`Chat command: ${result}`);}catch{log('Command effect sent; Twitch reply failed');}},log);
+const twitch=new Twitch(auth,async m=>{lastChat={name:m.name,text:m.text,time:new Date().toISOString()};liveCount++;assistant.add(m);integrationBus.emit('stream.chat.received',event('stream.chat.received','twitch',{id:m.id,name:m.name,text:m.text}));log('Real Twitch chat received');try{const result=await commands.handle(m);if(result!=='ignored')log(`Chat command ${m.text.trim().toLowerCase()}: ${result}`);}catch{log('Command effect sent; Twitch reply failed');}},log,WebSocket,s=>{if(subscriptions.handle(s)){subscriptionCount++;lastSubscription={name:s.name,time:new Date().toISOString()};log('Real Twitch channel.subscribe event received');}});
 const bridge=createVoiceBridge({assistant,commands,auth,diagnostic:log});
 const states=new Map();let lastAction=0;
 function equal(a,b){return typeof a==='string'&&typeof b==='string'&&a.length===b.length&&timingSafeEqual(Buffer.from(a),Buffer.from(b));}
@@ -30,7 +33,7 @@ const server=http.createServer(async(req,res)=>{
   res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');
   res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'self'; base-uri 'none'; form-action 'self'");
   try{
-    if(req.headers.host!=='localhost:3000'){json(res,403,{error:'Use localhost:3000'});return;}
+    if(req.headers.host!==`localhost:${port}`){json(res,403,{error:`Use localhost:${port}`});return;}
     const u=new URL(req.url,origin),path=u.pathname;
     if(req.method==='POST'){
       const voice=path==='/api/voice';
@@ -38,10 +41,10 @@ const server=http.createServer(async(req,res)=>{
       else if(req.headers.origin!==origin||!equal(req.headers['x-csrf-token'],admin)||!equal(cookie(req,'cc_admin'),admin)){json(res,403,{error:'Open the local dashboard before using controls'});return;}
       if(Date.now()-lastAction<250){json(res,429,{error:'Slow down'});return;}lastAction=Date.now();
       const b=await body(req);
-      if(path==='/api/setup'){await auth.configure(b.clientId,b.clientSecret);json(res,200,{ok:true});}
+      if(path==='/api/setup'){if(previewOnly)throw Error('Preview sandbox does not accept credentials');await auth.configure(b.clientId,b.clientSecret);json(res,200,{ok:true});}
       else if(path==='/api/reconnect'){twitch.reconnect();json(res,200,{ok:true});}
       else if(path==='/api/disconnect'){twitch.stop();await auth.disconnect();json(res,200,{ok:true});}
-      else if(path==='/api/preview'){if(!['hello','cocoa','chaos'].includes(b.effect))throw Error('Invalid effect');const result=await commands.handle({text:'!'+b.effect,userId:'director-preview',name:'Director · preview',id:'preview-'+Date.now(),privileged:true},'preview');if(result==='executed')previewCount++;json(res,200,{result});}
+      else if(path==='/api/preview'){if(!effects.includes(b.effect))throw Error('Invalid effect');let result;if(b.effect==='calculator'){if(Date.now()-(server.lastCalculatorPreview||0)<6000)throw Error('Preview cooldown');server.lastCalculatorPreview=Date.now();previews.effect('calculator','Director · preview','preview-'+Date.now(),'preview');result='executed';}else result=await previews.handle({text:'!'+b.effect,userId:'preview-'+b.effect,name:'Director · preview',id:'preview-'+Date.now(),privileged:true,broadcaster:true},'preview');if(result==='executed')previewCount++;json(res,200,{result});}
       else if(path==='/api/suggest'){json(res,200,assistant.suggest(b.messageId,b.action,b.reason));}
       else if(path==='/api/decision'){json(res,200,assistant.decide(b.id,b.approved===true));}
       else if(path==='/api/reply'){if(typeof b.message!=='string'||!b.message.trim()||b.message.length>450)throw Error('Reply must be 1–450 characters');if(Date.now()-(server.lastReply||0)<6000)throw Error('Reply cooldown');server.lastReply=Date.now();await auth.reply(b.message);json(res,200,{ok:true});}
@@ -54,14 +57,17 @@ const server=http.createServer(async(req,res)=>{
     }
     if(req.method!=='GET'){json(res,405,{error:'Method not allowed'});return;}
     if(path==='/auth/twitch'){
+      if(previewOnly)throw Error('Twitch authorization is disabled in the preview sandbox');
       if(!equal(cookie(req,'cc_admin'),admin))throw Error('Open dashboard first');
       if(!auth.configured)throw Error('Enter existing Twitch application credentials first');
       for(const [k,v] of states)if(v<Date.now())states.delete(k);
       if(states.size>=20)throw Error('Too many authorization attempts; wait ten minutes');
       const state=randomBytes(32).toString('hex');states.set(state,Date.now()+600000);
-      res.writeHead(302,{Location:'https://id.twitch.tv/oauth2/authorize?'+new URLSearchParams({client_id:auth.clientId,redirect_uri:redirect,response_type:'code',scope:scopes.join(' '),state,force_verify:'true'}),'Set-Cookie':`cc_oauth=${state}; HttpOnly; SameSite=Lax; Path=/auth; Max-Age=600`});res.end();return;
+      const requested=[...new Set([...scopes,...(auth.grantedScopes||[]),...(u.searchParams.get('subscriptions')==='1'?[subscriptionScope]:[])])];
+      res.writeHead(302,{Location:'https://id.twitch.tv/oauth2/authorize?'+new URLSearchParams({client_id:auth.clientId,redirect_uri:redirect,response_type:'code',scope:requested.join(' '),state,force_verify:'true'}),'Set-Cookie':`cc_oauth=${state}; HttpOnly; SameSite=Lax; Path=/auth; Max-Age=600`});res.end();return;
     }
     if(path==='/auth/twitch/callback'){
+      if(previewOnly)throw Error('Twitch authorization is disabled in the preview sandbox');
       const state=u.searchParams.get('state');if(!state||!equal(cookie(req,'cc_oauth'),state)||!states.has(state)||states.get(state)<Date.now())throw Error('OAuth state invalid or expired');states.delete(state);
       const code=u.searchParams.get('code');if(!code||u.searchParams.has('error'))throw Error('Twitch authorization was not completed');
       twitch.stop();try{await auth.authorize(code);}catch(e){await auth.disconnect();throw e;}twitch.start();log('Twitch account authorized');res.writeHead(302,{Location:'/','Set-Cookie':'cc_oauth=; HttpOnly; SameSite=Lax; Path=/auth; Max-Age=0'});res.end();return;
@@ -73,17 +79,17 @@ const server=http.createServer(async(req,res)=>{
     if(path==='/api/canvas'){json(res,200,canvas);return;}
     if(path==='/api/status'){
       if(!equal(cookie(req,'cc_admin'),admin)){json(res,403,{error:'Open dashboard'});return;}
-      json(res,200,{csrf:admin,configured:auth.configured,account:auth.account,channel:auth.account?.login||null,eventsub:twitch.status,lastChat,overlays:transport.overlays.size,liveCount,previewCount,summary:assistant.summary(),queue:assistant.queue,voiceRequests:pendingVoice,logs,canvas,voice:'Sebastian live voice: not connected; authenticated tool contract only'});return;
+      json(res,200,{csrf:admin,configured:auth.configured,account:auth.account,channel:auth.account?.login||null,eventsub:twitch.status,lastChat,overlays:transport.overlays.size,liveCount,previewCount,subscriptionCount,lastSubscription,subscriptionStatus:twitch.subscriptionStatus,previewOnly,summary:assistant.summary(),queue:assistant.queue,voiceRequests:pendingVoice,logs,canvas,voice:'Sebastian live voice: not connected; authenticated tool contract only'});return;
     }
-    const files={'/':'dashboard.html','/overlay':'overlay.html','/dashboard.js':'dashboard.js','/overlay.js':'overlay.js','/style.css':'style.css','/overlay.css':'overlay.css'};
+    const files={'/':'dashboard.html','/overlay':'overlay.html','/dashboard.js':'dashboard.js','/dashboard-update.css':'dashboard-update.css','/overlay.js':'overlay.js','/effect-queue.js':'effect-queue.js','/new-effects.js':'new-effects.js','/new-effects.css':'new-effects.css','/style.css':'style.css','/overlay.css':'overlay.css'};
     if(!files[path]){json(res,404,{error:'Not found'});return;}
     if(path==='/'){res.setHeader('Set-Cookie',`cc_admin=${admin}; HttpOnly; SameSite=Strict; Path=/`);}
     const file=files[path];res.setHeader('Content-Type',file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.js')?'text/javascript; charset=utf-8':'text/css; charset=utf-8');res.end(await readFile(join(root,'public',file)));
   }catch(e){json(res,400,{error:clean(e.message,150)});}
 });
 setInterval(()=>{for(const r of transport.overlays)r.write(': heartbeat\n\n');},15000).unref();
-setInterval(()=>validate(),3600000).unref();
+if(!previewOnly)setInterval(()=>validate(),3600000).unref();
 setInterval(()=>integrationBus.emit('stream.assistant.summary',event('stream.assistant.summary','assistant',assistant.summary())),15000).unref();
-server.listen(3000,'127.0.0.1',()=>{log('Cocoa & Chaos & Spite: http://localhost:3000');validate();});
+server.listen(port,'127.0.0.1',()=>{log(`Cocoa & Chaos & Spite: ${origin}${previewOnly?' · isolated previews; Twitch disabled':''}`);if(!previewOnly)validate();});
 server.on('error',()=>console.error('Unable to listen on localhost:3000; check whether another app is using port 3000.'));
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{twitch.stop();for(const r of transport.overlays)r.end();server.close(()=>process.exit(0));});

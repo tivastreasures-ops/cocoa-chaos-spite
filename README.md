@@ -2,7 +2,7 @@
 
 A local Twitch stream companion for Cat Girl’s faculty office. Real Twitch chat ingestion is implemented using EventSub WebSockets, with a separate transparent browser overlay, Director dashboard, and compact chat digest. Vanilla Node.js ES modules keep setup dependency-free. Node 22.16+ is required; tested on Node 24.22.1.
 
-**Status:** local previews and automated checks pass. Twitch OAuth, real chat, official API delivery, live reconnection, and streaming-software capture still need account-backed verification. Sebastian voice is an incomplete enhancement. Do not present preview footage as Twitch evidence.
+**Status:** real Twitch `!hello` reached EventSub and the Director confirmed the visible greeting on October 31 at 10:15:46 AM Pacific. New CAT CHAOS commands are implemented and preview-tested in isolated mode, pending activation on port 3000. Chat replies failed in the original running version; the user-token payload fix is regression-tested but awaits live retesting. Sebastian voice is an incomplete enhancement. Do not present preview footage as Twitch evidence. See `docs/CAT-CHAOS-UPDATE.md`.
 
 ## Start
 
@@ -21,19 +21,31 @@ Open **http://localhost:3000**. On this machine, if Node is not on PATH, use the
 6. Add that URL as a browser source in PRISM Live Studio or any application supporting browser sources. Set source size to **1920 × 1080**. No OBS-specific APIs are used. Set `CANVAS_WIDTH` / `CANVAS_HEIGHT` in `.env` and restart, or use `/overlay?width=1280&height=720` for another canvas. Match source dimensions to canvas dimensions.
 7. From actual Twitch chat, send `!hello`, then wait **at least 21 seconds if using the same viewer**, and send `!cocoa`. Confirm an effect and a reply for each. Ordinary viewers may run both.
 
-`!chaos` accepts only the broadcaster or a moderator, based on Twitch identity and badges on the received event. Subscriber-only behavior is not implemented or claimed. A subscriber without moderator privileges cannot run chaos. Shared-chat messages originating in another channel are discarded, and outgoing replies request `for_source_only`.
+`!chaos` and `!flail` accept only the broadcaster or a moderator. `!cat`, `!hello`, `!cocoa`, and `!hydrate` are public. `!mmm` accepts only the broadcaster or a message bearing Twitch’s current subscriber/founder badge; moderators without such a badge are denied. Cross-channel Shared Chat messages are discarded. User-token replies omit the forbidden `for_source_only` parameter and are suppressed if the channel is in a Shared Chat session or that check fails. A Shared Chat session starting between the check and send remains a race inherent in this installed-user flow; use this MVP outside Shared Chat.
 
 ## Local verification
 
-With the server running in one terminal, run this in another:
+For isolated tests, keep the live server running and start a separate sandbox (it does not initialize Twitch tokens or authorize Twitch):
+
+```powershell
+$env:CC_PREVIEW_ONLY='1'
+node src/server.mjs
+# http://localhost:3001 and /overlay
+```
+
+Run the suite in another terminal. Its HTTP test defaults to port 3001 so it cannot consume live command cooldowns:
 
 ```powershell
 node --test test/*.test.mjs
 ```
 
-The suite includes mocked EventSub welcome/subscription, notification deduplication, session migration, malformed input, revocation, permissions, cooldowns, refresh serialization, digest/approval behavior, and real local HTTP → SSE transport. It uses no real credentials. HTTP tests deliberately increment the preview counter. Restart to clear in-memory state.
+The suite includes mocked EventSub welcome/subscription, notification deduplication, session migration, malformed input, revocation, role/subscriber permissions, hydration cooldowns, refresh serialization, digest/approval behavior, reply payload regression, bounded renderer queue cleanup, and actual local HTTP → SSE transport. The subscription fixture is synthetic; it does not cause a purchase. HTTP tests increment only the sandbox preview counter. Restart the sandbox to clear its state.
 
-Browser verification completed for greeting, cocoa, chaos, effect reset and cooldown feedback; see `docs/VERIFICATION.md` for the current evidence. All preview controls use a 6-second global cooldown and a 20-second per-viewer cooldown. Preview buttons share one preview identity, so wait 21 seconds between them. Real chat replies are capped at 5 per 30 seconds, and successful commands remain visually effective if Twitch rejects their reply.
+Browser previews cover all eight effects. Live commands use a 6-second global effect cooldown and 20 seconds per viewer, except hydration which adds a 120-second command-wide cooldown and 180 seconds per viewer. Director previews have separate cooldown state and one identity per effect; wait 6 seconds between different previews and 21 seconds to repeat the same ordinary effect. Hydration preview retains its longer cooldown. Calculator previews are limited to once per 6 seconds. Real chat replies are capped at 5 per 30 seconds. The overlay runs one effect at a time, queues up to four, drops excess events, and expires queued items after 30 seconds. Every effect clears after 5.5 seconds.
+
+## New-subscription calculator
+
+After activating the update, click **Authorize subscription notifications** in the live dashboard. This explicitly requests the optional `channel:read:subscriptions` scope in addition to the existing chat scopes. Until approved, chat works normally and the calculator listener remains disabled. Twitch `channel.subscribe` version 1 events cause the explosion; resubscriptions are not included. Gifted new subscribers may generate individual events. Neither chat claims nor `!calculator` can trigger a real subscription event. Optional-listener failure/revocation does not stop chat. Previews require no subscription or payment.
 
 ## Security and operations
 

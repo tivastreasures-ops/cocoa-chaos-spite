@@ -1,0 +1,7 @@
+{
+  "metadata":{"message_id":"fixture-new-subscription-001","message_type":"notification","message_timestamp":"REPLACE_WITH_TEST_TIME"},
+  "payload":{
+    "subscription":{"type":"channel.subscribe","version":"1","condition":{"broadcaster_user_id":"1"}},
+    "event":{"user_id":"2","user_login":"fixture_viewer","user_name":"Fixture Viewer","broadcaster_user_id":"1","broadcaster_user_login":"fixture_channel","broadcaster_user_name":"Fixture Channel","tier":"1000","is_gift":false}
+  }
+}
