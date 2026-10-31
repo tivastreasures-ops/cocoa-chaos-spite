@@ -47,3 +47,5 @@ Source, setup, phase ledger, demo shot list, and submission draft prepared. Offi
 - [ ] Director approved final submission.
 
 Record counts, timestamps and a safe video timecode; never paste tokens or full callback URLs into this ledger.
+
+Post-activation live check: October 31, 10:36:56 AM Pacific, actual !hello executed and the Director confirmed receiving the Twitch welcome reply. This verifies the corrected official API reply. A later !flail at 10:37:09 AM was correctly denied by the 20-second per-viewer cooldown. Extra port-3001 preview tabs and sandbox server were closed to leave one live dashboard and one live overlay.
