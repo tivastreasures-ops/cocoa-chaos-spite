@@ -119,3 +119,18 @@ This is a development-status audit based on the existing source, Git history, re
 ## Live chat follow-up — November 1, 2026, 11:42 AM Pacific
 
 Server diagnostics confirm a real Twitch !hello was received at 19:42:20.084 UTC and executed at 19:42:20.410 UTC. The welcome reply was successfully sent and received back through Twitch at 19:42:20.484 UTC. The real-message counter is 2 (command plus bot reply); previews remain 0. Authorization is valid, chat and calculator listeners are subscribed, and one overlay is connected. This supersedes the earlier pending real-chat receipt finding. Visual greeting visibility has not been independently confirmed in this follow-up. Real subscription events remain 0; no real calculator explosion is claimed.
+
+
+## Phase 2 wiring checkpoint — November 1, 2026
+
+Sebastian is now wired into the existing local dashboard and overlay through his existing ElevenLabs conversational agent, with typed Director input and no microphone. Agent and approved Almost Butler voice were re-inspected read-only; neither was changed. New controls provide private dashboard/stream overlay routing, bounded PCM playback queue, mute, volume, captions, stop, a free local tone, identity preflight and explicit per-session paid approval. Sessions have a 60-second local duration limit and no automatic paid retry. Service billing is not capped by that local timer. The existing voice-tool suggestion contract remains separate and unchanged; the new connection denies client action tools.
+
+All 39 automated tests pass, including ten added tests for agent wiring, audio playback and HTTP isolation. Browser previews delivered the free tone and captions privately and to the overlay after its required autoplay-unlock click. An audio-caption timer binding defect was found in browser testing, fixed and regression-tested. These are free/local and mocked tests, not verification of real Sebastian speech or stream capture.
+
+The update was activated at 2:36 PM Pacific / 22:36 UTC. Saved Twitch authorization was reused, and both chat and subscription listeners registered. Runtime message counters reset on restart; the previously verified real !hello remains recorded in the Phase 1 evidence. No real subscription event, paid voice generation or public deployment was claimed or induced.
+
+The local ElevenLabs API key is still needed, entered directly in the dashboard password field. Connected-workspace credentials are not automatically available to the local server. The Director was asked to save the key and perform the free identity check before a paid session is approved. Audible real speech, OBS/PRISM capture and Android/iPhone operation remain unverified.
+
+Android phone-only streaming is the primary mobile target; the Director also has an iPhone for development and an existing GreenGeeks EcoSite Pro account. Check its Node version, persistent outbound WebSocket support, streaming responses and process idle policy before choosing a new host. Replit Reserved VM is the fallback candidate; PythonAnywhere is not a direct fit for the Node app. Hosted login, protected overlay access, HTTPS/OAuth origin configuration and durable token storage remain deployment work. No hosting purchase/account creation occurred.
+
+Detailed setup and source links: docs/SEBASTIAN-AND-STREAMING.md. Paid generation, public repository publication and final submission remain Director approval gates.

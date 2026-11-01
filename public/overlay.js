@@ -1,3 +1,4 @@
+import {PcmPlayer} from './pcm-player.js';
 import {EffectQueue} from './effect-queue.js';
 import {renderNewEffect} from './new-effects.js';
 const canvas=document.getElementById('canvas');let width=1920,height=1080;
@@ -13,4 +14,9 @@ function render(e){
  return ()=>layer.remove();
 }
 const queue=new EffectQueue(render);
-const feed=new EventSource('/api/events');feed.onmessage=msg=>{try{queue.accept(JSON.parse(msg.data));}catch{/* Invalid browser events are discarded. */}};
+const caption=document.createElement('div');caption.className='voice-caption';document.body.append(caption);
+const enable=document.createElement('button');enable.className='voice-enable';enable.textContent='Enable Sebastian audio';enable.hidden=true;document.body.append(enable);
+const audio=new PcmPlayer({caption:text=>{caption.textContent=text;},status:text=>{enable.hidden=!text.includes('blocked');}});
+enable.onclick=()=>audio.unlock().then(()=>enable.hidden=true).catch(()=>enable.hidden=false);
+audio.unlock().catch(()=>enable.hidden=false);
+const feed=new EventSource('/api/events');feed.onmessage=msg=>{try{const e=JSON.parse(msg.data);if(e.type==='stream.voice.audio')audio.accept(e.payload);else queue.accept(e);}catch{/* Invalid browser events are discarded. */}};feed.onerror=()=>audio.clear();
