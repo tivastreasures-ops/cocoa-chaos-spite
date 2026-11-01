@@ -15,6 +15,11 @@ function setup(options={}){
   return {s,emitted,requests,timers};
 }
 const metadata={type:'conversation_initiation_metadata',conversation_initiation_metadata_event:{agent_output_audio_format:'pcm_16000'}};
+test('key IDs are rejected before saving and existing key-ID errors explain the secret key requirement',async()=>{
+  const x=setup();await assert.rejects(x.s.configure('a-key-id-that-is-not-a-secret'),/starting sk_/);
+  x.s.fetch=async()=>({ok:false,status:400,json:async()=>({detail:{status:'api_key_id_used_as_api_key',message:'untrusted provider text'}})});
+  await assert.rejects(x.s.verify(),/Saved value is a key ID/);assert.equal(Socket.all.length,0);
+});
 test('paid start requires explicit approval; preview sandbox never contacts ElevenLabs',async()=>{
   const x=setup();for(const approval of [undefined,false,'true'])await assert.rejects(x.s.start(approval),/approval/);assert.equal(x.requests.length,0);assert.equal(Socket.all.length,0);
   x.s.previewOnly=true;await assert.rejects(x.s.start(true),/disabled/);assert.equal(x.requests.length,0);x.s.testTone();assert.equal(x.requests.length,0);assert.equal(x.emitted.at(-1).route,'dashboard');

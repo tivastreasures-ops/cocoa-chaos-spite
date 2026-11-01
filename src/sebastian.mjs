@@ -16,13 +16,21 @@ export class Sebastian {
   async configure(apiKey){
     if(this.previewOnly)throw Error('Credentials disabled in preview sandbox');
     if(this.connecting||this.socket)throw Error('Stop Sebastian before changing credentials');
-    if(typeof apiKey!=='string'||apiKey.length<20||apiKey.length>300||/\s/.test(apiKey))throw Error('Enter an ElevenLabs API key in the local dashboard');
+    if(typeof apiKey!=='string'||apiKey.length<20||apiKey.length>300||/\s/.test(apiKey)||!apiKey.startsWith('sk_'))throw Error('Use the secret ElevenLabs key starting sk_, not its key ID. Copy it when creating or rotating the key.');
     await mkdir(this.directory,{recursive:true,mode:0o700});const p=join(this.directory,'sebastian.json');await writeFile(p+'.tmp',JSON.stringify({apiKey}),{mode:0o600});await rename(p+'.tmp',p);this.key=apiKey;this.verifiedAt=null;
   }
   async api(path){
     if(!this.key)throw Error('Add an ElevenLabs API key locally first; the connected workspace does not share its key with this app');
     const r=await this.fetch('https://api.elevenlabs.io/v1/'+path,{headers:{'xi-api-key':this.key},signal:AbortSignal.timeout(15000)});
-    if(!r.ok)throw Error(`ElevenLabs access failed (${r.status}); check key permissions`);
+    if(!r.ok){
+      const b=await r.json().catch(()=>({}));
+      const messages={
+        api_key_id_used_as_api_key:'Saved value is a key ID. Replace it with the secret key starting sk_, shown when you create or rotate the key.',
+        invalid_api_key:'ElevenLabs rejected this key. Check the secret key or replace it locally.',
+        missing_permissions:'This key lacks permission for this agent. Review its ElevenLabs agent/conversation permissions.'
+      };
+      throw Error(messages[b.detail?.status]||`ElevenLabs access failed (${r.status}); check workspace access and key permissions`);
+    }
     return r.json();
   }
   async verify(){
