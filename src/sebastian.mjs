@@ -1,13 +1,13 @@
 import {mkdir,readFile,writeFile,rename} from 'node:fs/promises';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
-import {root} from './config.mjs';
+import {root,dataDir} from './config.mjs';
 
 export const SEBASTIAN_AGENT='agent_4301m69cqaa8e1h8cvbd9g3a1pq2';
 export const SEBASTIAN_VOICE='2X0uNJ4yDHqWnhVL8Ry4';
 const rates=new Set([16000,22050,24000,44100,48000]);
 export class Sebastian {
-  constructor({fetcher=fetch,Socket=WebSocket,emit=()=>{},log=()=>{},previewOnly=false,directory=join(root,'.private'),key=process.env.ELEVENLABS_API_KEY||'',later=setTimeout,cancel=clearTimeout}={}){
+  constructor({fetcher=fetch,Socket=WebSocket,emit=()=>{},log=()=>{},previewOnly=false,directory=dataDir,key=process.env.ELEVENLABS_API_KEY||'',later=setTimeout,cancel=clearTimeout}={}){
     Object.assign(this,{fetch:fetcher,Socket,emit,log,previewOnly,directory,key,later,cancel});
     this.state='not connected';this.route='dashboard';this.muted=false;this.volume=.7;this.captions=true;this.generation=0;this.rate=16000;this.session=null;
   }

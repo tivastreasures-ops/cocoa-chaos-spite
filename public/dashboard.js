@@ -16,6 +16,7 @@ async function refresh(){try{
  $('queue').replaceChildren(...s.queue.map(q=>{const d=message({name:q.viewer,text:q.text},false);d.append(node('p',q.action+' · '+q.status));if(q.status==='pending'){for(const [label,approved] of [['Approve for manual Twitch action',true],['Dismiss',false]]){const b=node('button',label);b.onclick=()=>post('/api/decision',{id:q.id,approved});d.append(b,document.createTextNode(' '));}}return d;}));
  $('voice-queue').replaceChildren(...s.voiceRequests.map(v=>{const d=node('div');d.append(node('p',v.kind==='reply'?'Suggested reply: '+v.message:'Suggested effect: '+v.effect));for(const approved of [true,false]){const b=node('button',approved?'Approve and execute':'Dismiss');b.onclick=()=>post('/api/voice-decision',{id:v.id,approved});d.append(b);}return d;}));}
  $('logs').replaceChildren(...s.logs.slice().reverse().map(l=>node('div',l.time.slice(11,19)+' '+l.message)));
+ if(s.hosted&&!s.chatEnabled)$('connection').textContent='HOSTED STAGING · TWITCH INGESTION PAUSED';
  if(s.previewOnly){$('setup').hidden=true;$('connection').textContent='ISOLATED PREVIEW · TWITCH DISABLED';}
 }catch(e){notice(e.message);}}
 $('credentials').onsubmit=async e=>{e.preventDefault();await post('/api/setup',{clientId:$('client-id').value.trim(),clientSecret:$('client-secret').value.trim()});$('client-secret').value='';};

@@ -19,4 +19,11 @@ const enable=document.createElement('button');enable.className='voice-enable';en
 const audio=new PcmPlayer({caption:text=>{caption.textContent=text;},status:text=>{enable.hidden=!text.includes('blocked');}});
 enable.onclick=()=>audio.unlock().then(()=>enable.hidden=true).catch(()=>enable.hidden=false);
 audio.unlock().catch(()=>enable.hidden=false);
-const feed=new EventSource('/api/events');feed.onmessage=msg=>{try{const e=JSON.parse(msg.data);if(e.type==='stream.voice.audio')audio.accept(e.payload);else queue.accept(e);}catch{/* Invalid browser events are discarded. */}};feed.onerror=()=>audio.clear();
+async function connectFeed(){
+ const token=new URLSearchParams(location.hash.slice(1)).get('access');
+ if(token){const r=await fetch('/api/overlay-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})});if(!r.ok){caption.textContent='Overlay link invalid. Reload the private link supplied by the Director.';return;}}
+ const feed=new EventSource('/api/events');feed.onmessage=msg=>{try{const e=JSON.parse(msg.data);if(e.type==='stream.voice.audio')audio.accept(e.payload);else queue.accept(e);}catch{/* Invalid browser events are discarded. */}};
+ feed.onerror=()=>{audio.clear();caption.textContent='Overlay disconnected. If this persists, reload your private overlay link.';};
+ feed.onopen=()=>{if(caption.textContent.startsWith('Overlay disconnected.'))caption.textContent='';};
+}
+connectFeed().catch(()=>caption.textContent='Overlay unavailable. Reload your private overlay link.');

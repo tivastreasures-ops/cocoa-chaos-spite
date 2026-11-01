@@ -1,7 +1,7 @@
 // Owns validation retries; transport reconnects remain in Twitch.
 export class Connection {
-  constructor(auth,twitch,log,{later=setTimeout,cancel=clearTimeout,now=Date.now}={}) {
-    Object.assign(this,{auth,twitch,log,later,cancel,now});
+  constructor(auth,twitch,log,{later=setTimeout,cancel=clearTimeout,now=Date.now,allowStart=true}={}) {
+    Object.assign(this,{auth,twitch,log,later,cancel,now,allowStart});
     this.generation=0;this.attempt=0;this.state='not authorized';this.nextRetry=null;
   }
   pause(){this.generation++;this.cancel(this.timer);this.timer=null;this.nextRetry=null;this.pending=null;}
@@ -22,7 +22,7 @@ export class Connection {
         await this.auth.validate();
         if(generation!==this.generation)return;
         this.state='valid';this.attempt=0;
-        if(this.auth.account&&(reconnect||this.twitch.stopped))this.twitch.start();
+        if(this.allowStart&&this.auth.account&&(reconnect||this.twitch.stopped))this.twitch.start();
       }catch(e){
         if(generation!==this.generation||e.kind==='cancelled')return;
         // A failed check must never leave an unvalidated session running.

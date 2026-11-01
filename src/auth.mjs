@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile, rename, rm } from 'node:fs/promises';
 import { join } from 'node:path';
-import { root, redirect, scopes } from './config.mjs';
-const dir=join(root,'.private');
+import { root, redirect, scopes, dataDir } from './config.mjs';
+const dir=dataDir;
 export class TwitchAuthError extends Error {
   constructor(message,kind='temporary'){super(message);this.kind=kind;}
 }

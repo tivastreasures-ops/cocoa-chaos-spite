@@ -134,3 +134,10 @@ The local ElevenLabs API key is still needed, entered directly in the dashboard 
 Android phone-only streaming is the primary mobile target; the Director also has an iPhone for development and an existing GreenGeeks EcoSite Pro account. Check its Node version, persistent outbound WebSocket support, streaming responses and process idle policy before choosing a new host. Replit Reserved VM is the fallback candidate; PythonAnywhere is not a direct fit for the Node app. Hosted login, protected overlay access, HTTPS/OAuth origin configuration and durable token storage remain deployment work. No hosting purchase/account creation occurred.
 
 Detailed setup and source links: docs/SEBASTIAN-AND-STREAMING.md. Paid generation, public repository publication and final submission remain Director approval gates.
+
+
+## Android hosting follow-up — November 1, 2026
+
+The Director confirmed real Sebastian verification and audible desktop speech. A status read showed verification at 23:20:37 UTC and a session ended by the 60-second limit. Stream capture and phone/hosted speech remain unverified.
+
+An isolated Android-hosting worktree is prepared for https://chaos.toomanytabsopen.net, with phone controls, protected hosted Director login, separate read-only overlay access, cPanel startup wrapper and a default-off Twitch ingestion cutover gate. All 45 staging tests pass; phone-sized browser layout was previewed. The Director screenshot confirms Node 22.23.4 in cPanel. GreenGeeks nameservers are present, but the chaos hostname had no A record at the check. No hosting/DNS/application changes or new paid generation occurred. Deployment, live credential transfer and one-owner cutover remain pending explicit approval. See the staging docs/ANDROID-HOSTING-CHECKPOINT.md.
