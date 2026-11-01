@@ -42,3 +42,8 @@ The Librarian supplies artwork; Codex integrates it. Original supplied reference
 - Public repository publication and final hackathon submission remain explicit Director approval gates. Neither occurred.
 
 This checkpoint supplements the earlier development audit; earlier open findings are historical where superseded here.
+
+
+## Live chat follow-up — November 1, 2026, 11:42 AM Pacific
+
+Server diagnostics confirm a real Twitch !hello was received at 19:42:20.084 UTC and executed at 19:42:20.410 UTC. The welcome reply was successfully sent and received back through Twitch at 19:42:20.484 UTC. The real-message counter is 2 (command plus bot reply); previews remain 0. Authorization is valid, chat and calculator listeners are subscribed, and one overlay is connected. This supersedes the earlier pending real-chat receipt finding. Visual greeting visibility has not been independently confirmed in this follow-up. Real subscription events remain 0; no real calculator explosion is claimed.

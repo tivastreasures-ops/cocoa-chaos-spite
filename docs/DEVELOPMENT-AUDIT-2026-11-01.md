@@ -114,3 +114,8 @@ Submission preparation exists, but no repository publication, public YouTube dem
 
 This is a development-status audit based on the existing source, Git history, recorded tool/diagnostic results, Director confirmations, supplied images, and the most recent recorded ElevenLabs inspection. It is not a security certification or a claim that the stream is currently online. No secrets are included. This audit request added reference copies and documentation only; it did not change runtime behavior or deploy the new artwork.
 
+
+
+## Live chat follow-up — November 1, 2026, 11:42 AM Pacific
+
+Server diagnostics confirm a real Twitch !hello was received at 19:42:20.084 UTC and executed at 19:42:20.410 UTC. The welcome reply was successfully sent and received back through Twitch at 19:42:20.484 UTC. The real-message counter is 2 (command plus bot reply); previews remain 0. Authorization is valid, chat and calculator listeners are subscribed, and one overlay is connected. This supersedes the earlier pending real-chat receipt finding. Visual greeting visibility has not been independently confirmed in this follow-up. Real subscription events remain 0; no real calculator explosion is claimed.
