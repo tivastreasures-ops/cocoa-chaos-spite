@@ -1,5 +1,11 @@
 # Cocoa & Chaos & Spite
 
+## Phase 1 checkpoint addendum — November 1, 2026
+
+Phase 1 reliability fixes are implemented and activated. The full suite passes 29 tests, including nine new reliability regressions. Temporary validation failures preserve authorization and retry; explicit disconnect cancels pending work, and stale subscription status is cleared. The Director renewed Twitch consent; chat and calculator listeners registered successfully. A controlled restart at 11:32 AM Pacific reused the saved grant and restored both listeners plus the existing overlay. Fresh real chat and real subscription receipt remain unverified in this checkpoint (real counters were zero). No paid speech, public publication or submission occurred.
+
+The Librarian manifest is delivered: https://docs.google.com/document/d/185XzDJ3rp2hWZK96PYuGudvvaUDvi75kowl5yvxEjuM . The Librarian supplies final artwork; Codex integrates it. See docs/PHASE-1-CHECKPOINT-2026-11-01.md for tests, remaining dependencies and gates. The original audit below is historical where superseded here.
+
 *Development and verification audit • November 1, 2026 • Pacific time*
 
 ## 1. Overall status

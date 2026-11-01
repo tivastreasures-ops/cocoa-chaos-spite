@@ -10,6 +10,7 @@ import {SubscriptionEffects} from './subscriptions.mjs';
 import {Transport,event,clean} from './events.mjs';
 import {Assistant} from './assistant.mjs';
 import {Twitch} from './twitch.mjs';
+import {Connection} from './connection.mjs';
 import {createVoiceBridge} from './voice.mjs';
 const auth=new Auth();if(!previewOnly)await auth.init();
 const transport=new Transport(),assistant=new Assistant(),logs=[],pendingVoice=[];
@@ -28,7 +29,8 @@ function equal(a,b){return typeof a==='string'&&typeof b==='string'&&a.length===
 function cookie(req,name){return req.headers.cookie?.split('; ').find(v=>v.startsWith(name+'='))?.slice(name.length+1);}
 async function body(req){let s='';for await(const chunk of req){s+=chunk;if(s.length>10000)throw Error('Request too large');}return JSON.parse(s||'{}');}
 function json(res,status,data){res.writeHead(status,{'Content-Type':'application/json'});res.end(JSON.stringify(data));}
-async function validate(){try{await auth.validate();if(auth.account&&twitch.stopped)twitch.start();}catch{twitch.stop();await auth.disconnect();log('Authorization validation failed; please connect Twitch again');}}
+const connection=new Connection(auth,twitch,log);
+const validate=()=>connection.validate();
 const server=http.createServer(async(req,res)=>{
   res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');
   res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'self'; base-uri 'none'; form-action 'self'");
@@ -42,8 +44,8 @@ const server=http.createServer(async(req,res)=>{
       if(Date.now()-lastAction<250){json(res,429,{error:'Slow down'});return;}lastAction=Date.now();
       const b=await body(req);
       if(path==='/api/setup'){if(previewOnly)throw Error('Preview sandbox does not accept credentials');await auth.configure(b.clientId,b.clientSecret);json(res,200,{ok:true});}
-      else if(path==='/api/reconnect'){twitch.reconnect();json(res,200,{ok:true});}
-      else if(path==='/api/disconnect'){twitch.stop();await auth.disconnect();json(res,200,{ok:true});}
+      else if(path==='/api/reconnect'){if(previewOnly)throw Error('Twitch disabled in preview sandbox');if(!auth.tokens)throw Error('Authorize Twitch first');await connection.validate(true);json(res,200,{ok:true});}
+      else if(path==='/api/disconnect'){await connection.disconnect();json(res,200,{ok:true});}
       else if(path==='/api/preview'){if(!effects.includes(b.effect))throw Error('Invalid effect');let result;if(b.effect==='calculator'){if(Date.now()-(server.lastCalculatorPreview||0)<6000)throw Error('Preview cooldown');server.lastCalculatorPreview=Date.now();previews.effect('calculator','Director · preview','preview-'+Date.now(),'preview');result='executed';}else result=await previews.handle({text:'!'+b.effect,userId:'preview-'+b.effect,name:'Director · preview',id:'preview-'+Date.now(),privileged:true,broadcaster:true},'preview');if(result==='executed')previewCount++;json(res,200,{result});}
       else if(path==='/api/suggest'){json(res,200,assistant.suggest(b.messageId,b.action,b.reason));}
       else if(path==='/api/decision'){json(res,200,assistant.decide(b.id,b.approved===true));}
@@ -70,7 +72,7 @@ const server=http.createServer(async(req,res)=>{
       if(previewOnly)throw Error('Twitch authorization is disabled in the preview sandbox');
       const state=u.searchParams.get('state');if(!state||!equal(cookie(req,'cc_oauth'),state)||!states.has(state)||states.get(state)<Date.now())throw Error('OAuth state invalid or expired');states.delete(state);
       const code=u.searchParams.get('code');if(!code||u.searchParams.has('error'))throw Error('Twitch authorization was not completed');
-      twitch.stop();try{await auth.authorize(code);}catch(e){await auth.disconnect();throw e;}twitch.start();log('Twitch account authorized');res.writeHead(302,{Location:'/','Set-Cookie':'cc_oauth=; HttpOnly; SameSite=Lax; Path=/auth; Max-Age=0'});res.end();return;
+      await connection.authorize(code);log('Twitch account authorized');res.writeHead(302,{Location:'/','Set-Cookie':'cc_oauth=; HttpOnly; SameSite=Lax; Path=/auth; Max-Age=0'});res.end();return;
     }
     if(path==='/api/events'){
       if(transport.overlays.size>=12){json(res,429,{error:'Too many overlays'});return;}
@@ -79,7 +81,7 @@ const server=http.createServer(async(req,res)=>{
     if(path==='/api/canvas'){json(res,200,canvas);return;}
     if(path==='/api/status'){
       if(!equal(cookie(req,'cc_admin'),admin)){json(res,403,{error:'Open dashboard'});return;}
-      json(res,200,{csrf:admin,configured:auth.configured,account:auth.account,channel:auth.account?.login||null,eventsub:twitch.status,lastChat,overlays:transport.overlays.size,liveCount,previewCount,subscriptionCount,lastSubscription,subscriptionStatus:twitch.subscriptionStatus,previewOnly,summary:assistant.summary(),queue:assistant.queue,voiceRequests:pendingVoice,logs,canvas,voice:'Sebastian live voice: not connected; authenticated tool contract only'});return;
+      json(res,200,{csrf:admin,configured:auth.configured,account:auth.account,channel:auth.account?.login||null,eventsub:twitch.status,authorization:connection.state,validationRetryAt:connection.nextRetry,lastChat,overlays:transport.overlays.size,liveCount,previewCount,subscriptionCount,lastSubscription,subscriptionStatus:twitch.subscriptionStatus,previewOnly,summary:assistant.summary(),queue:assistant.queue,voiceRequests:pendingVoice,logs,canvas,voice:'Sebastian live voice: not connected; authenticated tool contract only'});return;
     }
     const files={'/':'dashboard.html','/overlay':'overlay.html','/dashboard.js':'dashboard.js','/dashboard-update.css':'dashboard-update.css','/overlay.js':'overlay.js','/effect-queue.js':'effect-queue.js','/new-effects.js':'new-effects.js','/new-effects.css':'new-effects.css','/style.css':'style.css','/overlay.css':'overlay.css'};
     if(!files[path]){json(res,404,{error:'Not found'});return;}
@@ -92,4 +94,4 @@ if(!previewOnly)setInterval(()=>validate(),3600000).unref();
 setInterval(()=>integrationBus.emit('stream.assistant.summary',event('stream.assistant.summary','assistant',assistant.summary())),15000).unref();
 server.listen(port,'127.0.0.1',()=>{log(`Cocoa & Chaos & Spite: ${origin}${previewOnly?' · isolated previews; Twitch disabled':''}`);if(!previewOnly)validate();});
 server.on('error',()=>console.error('Unable to listen on localhost:3000; check whether another app is using port 3000.'));
-for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{twitch.stop();for(const r of transport.overlays)r.end();server.close(()=>process.exit(0));});
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{connection.pause();twitch.stop();for(const r of transport.overlays)r.end();server.close(()=>process.exit(0));});

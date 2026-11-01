@@ -5,6 +5,7 @@ function node(tag,text){const n=document.createElement(tag);if(text!==undefined)
 function message(m,review=true){const div=node('div');div.className='message';div.append(node('strong',m.name),node('p',m.text));if(review){const b=node('button','Add to review tray');b.onclick=()=>post('/api/suggest',{messageId:m.id,action:'review',reason:'Director requested review'});div.append(b);}return div;}
 async function refresh(){try{
  const r=await fetch('/api/status');if(!r.ok)throw Error('Dashboard session expired; reload this page');const s=await r.json();csrf=s.csrf;
+ if($('authorization'))$('authorization').textContent='Authorization: '+s.authorization+(s.validationRetryAt?' · retry '+new Date(s.validationRetryAt).toLocaleTimeString():'');
  if($('subscription-status'))$('subscription-status').textContent=s.subscriptionStatus||'Update activation pending';
  if($('subscription-count'))$('subscription-count').textContent=(s.subscriptionCount||0)+' real subscription events · previews never count';
  if(s.previewOnly){$('subscription-auth').hidden=true;$('connection').dataset.preview='true';}
