@@ -8,6 +8,7 @@ This is an Android-friendly hosted web companion built from the existing project
 
 Implemented in staging:
 
+- Isolated local preview cookies so visiting a staging port does not expire the working desktop dashboard session.
 - Phone navigation, touch-sized controls and a home-screen web manifest. No offline command queue, cached secrets, service-worker interception, or automatic paid speech.
 - Opt-in hosted configuration with an HTTPS origin, exact hosted Twitch callback, expected Host validation, configurable provider port and separate persistent private-data directory outside the application.
 - Director sign-in with bounded attempts, eight-hour server-side sessions, Secure/HttpOnly cookies, sign-out, and preserved Origin/CSRF control checks.

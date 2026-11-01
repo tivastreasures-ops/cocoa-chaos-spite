@@ -19,6 +19,7 @@ const transport=new Transport(),assistant=new Assistant(),logs=[],pendingVoice=[
 // Internal integration bus keeps chat context off the public overlay feed.
 export const integrationBus=new EventEmitter();
 const localAdmin=randomBytes(32).toString('hex');
+const adminCookie=hosted||port===3000?'cc_admin':'cc_admin_'+port;
 const access=hosted?new HostedAccess({password:process.env.CC_DIRECTOR_PASSWORD,overlayToken:process.env.CC_OVERLAY_TOKEN,origin}):null;
 function log(message){logs.push({time:new Date().toISOString(),message});if(logs.length>40)logs.shift();console.log(new Date().toISOString(),message);}
 const commands=new Commands(e=>{integrationBus.emit(e.type,e);if(e.type==='stream.overlay.effect')transport.emit(e);},message=>auth.reply(message));
@@ -43,7 +44,7 @@ const server=http.createServer(async(req,res)=>{
     if(req.headers.host!==expectedHost){json(res,403,{error:'Unexpected site host'});return;}
     const u=new URL(req.url,origin),path=u.pathname;
     if(u.origin!==origin){json(res,403,{error:'Unexpected site origin'});return;}
-    const sessionToken=cookie(req,'cc_admin');
+    const sessionToken=cookie(req,adminCookie);
     const authenticated=hosted?access.valid(sessionToken):equal(sessionToken,localAdmin);
     const admin=hosted?(authenticated?sessionToken:''):localAdmin;
     if(hosted&&req.method==='POST'&&path==='/api/login'){
@@ -64,7 +65,7 @@ const server=http.createServer(async(req,res)=>{
     if(req.method==='POST'){
       const voice=path==='/api/voice';
       if(voice){const key=process.env.VOICE_BRIDGE_TOKEN;if(!key||key.length<32||!equal(req.headers.authorization,`Bearer ${key}`)){json(res,401,{error:'Voice bridge disabled or unauthorized'});return;}}
-      else if(req.headers.origin!==origin||!equal(req.headers['x-csrf-token'],admin)||!equal(cookie(req,'cc_admin'),admin)){json(res,403,{error:'Open the local dashboard before using controls'});return;}
+      else if(req.headers.origin!==origin||!equal(req.headers['x-csrf-token'],admin)||!equal(cookie(req,adminCookie),admin)){json(res,403,{error:'Open the local dashboard before using controls'});return;}
       if(Date.now()-lastAction<250){json(res,429,{error:'Slow down'});return;}lastAction=Date.now();
       const b=await body(req);
       if(path==='/api/logout'&&hosted){access.logout(sessionToken);states.clear();sebastian.stop('Director signed out');for(const r of [...privateAudio.overlays,...transport.overlays])if(r.directorToken===sessionToken)r.end();res.setHeader('Set-Cookie',access.cookie('cc_admin','',0));json(res,200,{ok:true});}
@@ -98,7 +99,7 @@ const server=http.createServer(async(req,res)=>{
     if(req.method!=='GET'){json(res,405,{error:'Method not allowed'});return;}
     if(path==='/auth/twitch'){
       if(previewOnly)throw Error('Twitch authorization is disabled in the preview sandbox');
-      if(!equal(cookie(req,'cc_admin'),admin))throw Error('Open dashboard first');
+      if(!equal(cookie(req,adminCookie),admin))throw Error('Open dashboard first');
       if(!auth.configured)throw Error('Enter existing Twitch application credentials first');
       for(const [k,v] of states)if(v<Date.now())states.delete(k);
       if(states.size>=20)throw Error('Too many authorization attempts; wait ten minutes');
@@ -113,7 +114,7 @@ const server=http.createServer(async(req,res)=>{
       await connection.authorize(code);log('Twitch account authorized');res.writeHead(302,{Location:'/','Set-Cookie':`cc_oauth=; HttpOnly; SameSite=Lax; Path=/auth; Max-Age=0${hosted?'; Secure':''}`});res.end();return;
     }
     if(path==='/api/sebastian/events'){
-      if(!equal(cookie(req,'cc_admin'),admin)){json(res,403,{error:'Open dashboard'});return;}
+      if(!equal(cookie(req,adminCookie),admin)){json(res,403,{error:'Open dashboard'});return;}
       if(privateAudio.overlays.size>=6){json(res,429,{error:'Too many private audio clients'});return;}
       res.writeHead(200,{'Content-Type':'text/event-stream','Connection':'keep-alive','X-Accel-Buffering':'no'});res.write(': private audio connected\n\n');res.directorToken=admin;privateAudio.add(res);return;
     }
@@ -124,12 +125,12 @@ const server=http.createServer(async(req,res)=>{
     }
     if(path==='/api/canvas'){json(res,200,canvas);return;}
     if(path==='/api/status'){
-      if(!equal(cookie(req,'cc_admin'),admin)){json(res,403,{error:'Open dashboard'});return;}
+      if(!equal(cookie(req,adminCookie),admin)){json(res,403,{error:'Open dashboard'});return;}
       json(res,200,{csrf:admin,hosted,chatEnabled,configured:auth.configured,account:auth.account,channel:auth.account?.login||null,eventsub:twitch.status,authorization:connection.state,validationRetryAt:connection.nextRetry,lastChat,overlays:transport.overlays.size,liveCount,previewCount,subscriptionCount,lastSubscription,subscriptionStatus:twitch.subscriptionStatus,previewOnly,summary:assistant.summary(),queue:assistant.queue,voiceRequests:pendingVoice,logs,canvas,sebastian:sebastian.status(),voice:'Sebastian: '+sebastian.state+' · '+(sebastian.route==='dashboard'?'private dashboard':'stream overlay')+' · microphone off'});return;
     }
     const files={'/':'dashboard.html','/login.js':'login.js','/mobile.css':'mobile.css','/mobile.js':'mobile.js','/manifest.webmanifest':'manifest.webmanifest','/app-icon.svg':'app-icon.svg','/overlay':'overlay.html','/dashboard.js':'dashboard.js','/dashboard-update.css':'dashboard-update.css','/overlay.js':'overlay.js','/pcm-player.js':'pcm-player.js','/sebastian-dashboard.js':'sebastian-dashboard.js','/sebastian.css':'sebastian.css','/effect-queue.js':'effect-queue.js','/new-effects.js':'new-effects.js','/new-effects.css':'new-effects.css','/style.css':'style.css','/overlay.css':'overlay.css'};
     if(!files[path]){json(res,404,{error:'Not found'});return;}
-    if(path==='/'&&!hosted){res.setHeader('Set-Cookie',`cc_admin=${admin}; HttpOnly; SameSite=Strict; Path=/`);}
+    if(path==='/'&&!hosted){res.setHeader('Set-Cookie',`${adminCookie}=${admin}; HttpOnly; SameSite=Strict; Path=/`);}
     const file=files[path];res.setHeader('Content-Type',file.endsWith('.webmanifest')?'application/manifest+json':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.js')?'text/javascript; charset=utf-8':'text/css; charset=utf-8');res.end(await readFile(join(root,'public',file)));
   }catch(e){json(res,400,{error:clean(e.message,150)});}
 });
