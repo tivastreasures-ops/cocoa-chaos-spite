@@ -1,6 +1,6 @@
-import {renderApprovedArt} from './approved-art.js';
+import {renderApprovedArt} from './approved-art.js?v=3';
 import {PcmPlayer} from './pcm-player.js';
-import {EffectQueue} from './effect-queue.js';
+import {EffectQueue} from './effect-queue.js?v=3';
 import {renderNewEffect} from './new-effects.js';
 const canvas=document.getElementById('canvas');let width=1920,height=1080;
 function resize(){canvas.style.width=width+'px';canvas.style.height=height+'px';canvas.style.transform=`scale(${Math.min(innerWidth/width,innerHeight/height)})`;}

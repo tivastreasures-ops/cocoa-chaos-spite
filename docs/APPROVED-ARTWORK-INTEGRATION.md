@@ -13,3 +13,11 @@ tiny preserves the previous CSS/SVG marshmallow-cat effect. Safe default: subscr
 46 automated tests pass with a separate preview-only HTTP server using the configured localhost Host. Initial environment failures (missing preview server, sandbox isolation and an intentionally rejected mismatched Host) were resolved before this result. Browser portrait preview confirmed pink rain PNG loading and happy Cat Girl frames with transparent background. Hosted verification and Android confirmation must be recorded separately after deployment. Earlier PRISM recording success concerns the previous artwork and free beep only.
 
 Character avatar references and future BRB/trivia expansion are not enabled. Sebastian's voice/agent remain unchanged.
+
+## Director review corrections — November 2, 2026
+
+Director confirmed flail, running cat and pink marshmallow rain are perfect on Android PRISM; requested tiny fix, chaos traversal and falling cocoa garnish. Approved reactions and rain size were preserved.
+
+Fixed tiny browser queue allowlist omission; added command-to-queue-to-cleanup regression. Restored 45 independently delayed falling paw marshmallows in cocoa rather than six bobbing in a line. Extracted four distinct chaos poses with connected alpha segmentation; cat now traverses the screen while the existing falling papers remain. Existing role checks and cooldowns unchanged. All 47 tests pass. No desktop/live/paid changes.
+
+Browser verification discovered stale cached JS/CSS, so versioned overlay entry/module/style URLs were deployed. Hosted tiny now creates 32 legacy marshmallow cats. PRISM should reload the Web source to acquire build 3; add &build=3 before the private #access fragment if the app retains old HTML. No private link values recorded.

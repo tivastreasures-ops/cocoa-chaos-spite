@@ -26,6 +26,27 @@ def save(im,name,box=(640,640)):
     target=Image.new('RGBA',box);target.alpha_composite(crop,((box[0]-crop.width)//2,int(box[1]*.90)-crop.height))
     target.save(OUT/name,optimize=True)
     report.append({'file':name,'size':box,'alphaExtrema':target.getchannel('A').getextrema(),'bytes':(OUT/name).stat().st_size})
+def chaos_frames(sheet,box):
+    # Separate touching source poses using eroded alpha seeds; expand back into original edges.
+    from collections import deque
+    small=sheet.getchannel('A').resize((600,200)).filter(ImageFilter.MinFilter(3))
+    mask=np.array(small)>128;components=[]
+    for y,x in np.argwhere(mask):
+        if not mask[y,x]: continue
+        q=deque([(int(y),int(x))]);mask[y,x]=False;points=[]
+        while q:
+            a,b=q.popleft();points.append((a,b))
+            for c,d in [(a-1,b),(a+1,b),(a,b-1),(a,b+1)]:
+                if 0<=c<200 and 0<=d<600 and mask[c,d]:mask[c,d]=False;q.append((c,d))
+        if len(points)>1000:components.append(points)
+    components.sort(key=lambda pts:min(x for y,x in pts))
+    assert len(components)==4
+    for i,points in enumerate(components):
+        mask=Image.new('L',(600,200));pixels=mask.load()
+        for y,x in points:pixels[x,y]=255
+        mask=mask.resize(sheet.size,Image.Resampling.NEAREST).filter(ImageFilter.MaxFilter(17))
+        a=np.array(sheet);a[:,:,3]=np.minimum(a[:,:,3],np.array(mask));save(Image.fromarray(a),f'chaos-{i+1}.png',box)
+
 save(clean('Chibi Cats Hydrate Sticker.png'),'hydrate.png',(900,700))
 save(clean('Cocoa & Chaos Mug Design.png'),'cocoa-cup.png')
 save(clean('Fluffy Marshmallow Paw Print.png'),'cocoa-garnish.png',(192,192))
@@ -35,7 +56,7 @@ for i,(n,bg) in enumerate([('Chibi Pink Plush Cat with Paw Pads.png',None),('Kaw
 for src,prefix,count,bg,box in [('Determined Black Cat Running Sequence.png','run',6,'white',(640,400)),('Flail - Chibi Catgirl Celebration Sprite Sheet.png','flail',4,'black',(768,768)),('chaos-mode-sprite.png','chaos',4,None,(640,480))]:
     sheet=clean(src,bg)
     if prefix=='chaos':
-        for i in range(4):save(sheet.crop((1625,0,2172,724)),f'chaos-{i+1}.png',box)
+        chaos_frames(sheet,box)
         continue
     for i in range(count): save(sheet.crop((round(i*sheet.width/count)+8,0,round((i+1)*sheet.width/count)-16,sheet.height)),f'{prefix}-{i+1}.png',box)
 papers=clean('Cute Cat-Themed Paper Sticker Sheet.png')

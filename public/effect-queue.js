@@ -2,7 +2,7 @@
 export class EffectQueue {
   constructor(play,{schedule=(callback,ms)=>setTimeout(callback,ms),now=Date.now}={}){this.play=play;this.schedule=schedule;this.now=now;this.pending=[];this.busy=false;this.seen=new Set();}
   accept(e){
-    if(e?.schemaVersion!==1||e.type!=='stream.overlay.effect'||!['twitch','preview','director'].includes(e.source)||typeof e.eventId!=='string'||e.eventId.length>100||!['hello','cocoa','chaos','hydrate','mmm','cat','flail','calculator'].includes(e.payload?.effect)||typeof e.payload.user!=='string'||e.payload.user.length>100||e.payload.durationMs!==5500)return false;
+    if(e?.schemaVersion!==1||e.type!=='stream.overlay.effect'||!['twitch','preview','director'].includes(e.source)||typeof e.eventId!=='string'||e.eventId.length>100||!['hello','cocoa','chaos','hydrate','mmm','cat','flail','tiny','calculator'].includes(e.payload?.effect)||typeof e.payload.user!=='string'||e.payload.user.length>100||e.payload.durationMs!==5500)return false;
     if(this.seen.has(e.eventId)||this.pending.length>=4)return false;
     this.seen.add(e.eventId);if(this.seen.size>200)this.seen.delete(this.seen.values().next().value);
     this.pending.push({e,received:this.now()});this.next();return true;
