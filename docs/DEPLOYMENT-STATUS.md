@@ -1,13 +1,25 @@
-# GreenGeeks preview deployment status — November 1, 2026
+# GreenGeeks staging checkpoint — November 1, 2026
 
-The Director explicitly approved creating chaos.toomanytabsopen.net on the existing GreenGeeks Pro plan and deploying the preview-only Android package, protected by authentication and HTTPS. Live Twitch ingestion and paid voice must remain disabled. No production promotion is approved.
+Director-approved preview only; no production promotion.
 
-The controllable in-app browser currently displays the GreenGeeks cPanel login page. The Director was asked to complete that login privately. The existing external Chrome session was not reused because its browser control was unreliable. The hosting login session has not yet been established in the controlled browser.
+cPanel SSO succeeded. Created chaos.toomanytabsopen.net with a separate document root. Provisioned Node 22.23.4 at /home/ACCOUNT/cocoa-chaos-app, app.cjs. Uploaded and extracted the reviewed 2.61 MB staging archive. Desktop app and credentials unchanged.
 
-No domain, DNS, application, credential or hosting setting has been changed during this deployment attempt. The working desktop app is unchanged.
+Saved CC_HOSTED=1, CC_PREVIEW_ONLY=1, CC_TWITCH_INGEST=0, PUBLIC_ORIGIN=https://chaos.toomanytabsopen.net and CC_DATA_DIR=/home/ACCOUNT/cocoa-chaos-data. Director private entry and submission of CC_DIRECTOR_PASSWORD and separate CC_OVERLAY_TOKEN are pending. No existing service keys were uploaded.
 
-A read-only HTTPS preflight at 2026-11-02 00:02:41 UTC (November 1, 4:02 PM Pacific) could not reach the target's health, login, protected feeds or manifest endpoints. This is a pre-deployment reachability result, not a failed deployed-app test. HTTPS and hosted authentication are not yet verified. Physical Android layout/audio remain pending; a desktop phone-width preview is not substituted for those checks.
+AutoSSL reports a valid certificate expiring January 31, 2027. Browser HTTPS responds with the provider Node starter page. The extracted app has not been activated/restarted yet. Shell public verifier at 2026-11-02T01:27:18Z failed requests despite browser reachability. No hosted app authentication/SSE/preview verification is claimed.
 
-scripts/verify-public-staging.mjs is syntax-checked and ready to repeat the read-only public checks after deployment. It accepts no credentials and invokes no live services. Existing application tests remain at 45 passed from the reviewed staging build.
+Next: Director saves private credentials, restart staging only, verify hosted auth, protected feeds, previews, persistence, HTTPS redirect and disabled live/paid routes. Then actual Android free-tone audio and recording tests. Prior 45 local tests and phone viewport preview do not establish physical Android audio.
 
-Next: complete cPanel login; verify the domain is attached to this account; provision the approved hostname, certificate and private app/data directories; upload reviewed sources; configure preview-only mode; have the Director enter new login/overlay credentials privately; verify hosted HTTPS/authentication/SSE and disabled live-service flags; then perform actual Android free-tone/recording checks. Report any failure before enabling additional features.
+Drive audit updated with this checkpoint. Working desktop process unchanged; no paid generation or production promotion.
+
+## Activation checkpoint — November 1, 2026, 7:31 PM Pacific
+
+Director corrected the overlay secret length and saved it privately. Staging was restarted; public HTTPS now serves the actual Director sign-in page and /health returns {"ok":true}. Browser navigation to HTTP /health ended on HTTPS. Anonymous /api/status and /api/sebastian/events deny access with Director sign-in errors; /api/events denies access without the protected overlay link. No secret values were recorded.
+
+The shell verifier still reports request failures despite browser HTTPS success; do not label that checker passed. Authenticated hosted previews, disabled-service diagnostics, SSE and physical Android audio are pending Director sign-in/device test. No live services or paid generation invoked; desktop app untouched.
+
+Authenticated checkpoint — 7:35 PM Pacific: Director successfully signed in. Hosted dashboard reports ISOLATED PREVIEW / TWITCH DISABLED, not authorized/offline, and disabled paid session controls. Running-cat preview executed, count advanced to 1, one overlay connected, and cat/papers visually appeared on the hosted overlay. Free-tone UI transport test returned Audio ready; this is not audible device confirmation. Browser viewport override requested 390x844 but actual reported CSS width was 653; no overflow at that effective width. Do not claim a 390px hosted-device test. Physical Android sign-in, layout and free-beep test requested from Director, result pending. Preview and live-event evidence remain separate.
+
+## Physical Android confirmation — November 1, 2026
+
+Director reported "Beep heard; layout fits" from the actual Android phone. This verifies user-confirmed audible free-tone browser playback and fitting dashboard layout on that device. Mobile streaming-app Web-source audio, recorded/broadcast audio capture and background operation remain unverified. No paid Sebastian generation or live Twitch ingestion was enabled. No production promotion. Drive audit updated.

@@ -1,3 +1,4 @@
+import {renderApprovedArt} from './approved-art.js';
 import {PcmPlayer} from './pcm-player.js';
 import {EffectQueue} from './effect-queue.js';
 import {renderNewEffect} from './new-effects.js';
@@ -7,10 +8,11 @@ fetch('/api/canvas').then(r=>r.json()).then(c=>{const q=new URLSearchParams(loca
 function make(tag,cls,text,parent){const n=document.createElement(tag);n.className=cls;if(text)n.textContent=text;(parent||canvas).append(n);return n;}
 function render(e){
  const layer=make('div','effect'),p=e.payload;layer.dataset.effect=p.effect;
- if(p.effect==='hello'){const box=make('div','greeting','',layer);make('small','',e.source==='preview'?'DIRECTOR PREVIEW':'COCOA & CHAOS & SPITE',box);make('h1','',`Welcome, ${p.user.slice(0,50)}.`,box);make('p','','The faculty office saved you a seat.',box);for(let i=0;i<12;i++){const s=make('div','star','✦',layer);s.style.left=5+Math.random()*55+'%';s.style.top=35+Math.random()*50+'%';s.style.setProperty('--delay',Math.random()+'s');}}
- if(p.effect==='cocoa'){const mug=make('div','cocoa','',layer);make('span','','✦',mug);make('div','cocoa-label','Marshmallow budget: exceeded.',layer);for(let i=0;i<65;i++){const m=make('i','marshmallow','',layer);m.style.right=120+Math.random()*330+'px';m.style.bottom=290+Math.random()*85+'px';m.style.setProperty('--delay',Math.random()*.7+'s');}}
+ const approved=renderApprovedArt(p.effect,layer,{width,height,user:p.user});
+ if(!approved&&p.effect==='hello'){const box=make('div','greeting','',layer);make('small','',e.source==='preview'?'DIRECTOR PREVIEW':'COCOA & CHAOS & SPITE',box);make('h1','',`Welcome, ${p.user.slice(0,50)}.`,box);make('p','','The faculty office saved you a seat.',box);for(let i=0;i<12;i++){const s=make('div','star','✦',layer);s.style.left=5+Math.random()*55+'%';s.style.top=35+Math.random()*50+'%';s.style.setProperty('--delay',Math.random()+'s');}}
+ if(!approved&&p.effect==='cocoa'){const mug=make('div','cocoa','',layer);make('span','','✦',mug);make('div','cocoa-label','Marshmallow budget: exceeded.',layer);for(let i=0;i<65;i++){const m=make('i','marshmallow','',layer);m.style.right=120+Math.random()*330+'px';m.style.bottom=290+Math.random()*85+'px';m.style.setProperty('--delay',Math.random()*.7+'s');}}
  if(p.effect==='chaos'){for(let i=0;i<30;i++){const paper=make('div','paper','',layer);paper.style.left=Math.random()*95+'%';paper.style.setProperty('--delay',Math.random()*.5+'s');paper.style.setProperty('--drift',(Math.random()-.5)*500+'px');paper.style.setProperty('--fall',height+400+'px');}const label=make('div','greeting','',layer);make('small','','FACULTY OFFICE INCIDENT #001',label);make('h1','','The paperwork has escaped.',label);}
- renderNewEffect(p.effect,layer,{width,height,user:p.user});
+ if(!approved)renderNewEffect(p.effect==='tiny'?'mmm':p.effect,layer,{width,height,user:p.user});
  return ()=>layer.remove();
 }
 const queue=new EffectQueue(render);

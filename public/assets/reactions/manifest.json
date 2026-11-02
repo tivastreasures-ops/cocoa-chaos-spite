@@ -1,0 +1,362 @@
+[
+  {
+    "file": "hydrate.png",
+    "size": [
+      900,
+      700
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 555407
+  },
+  {
+    "file": "cocoa-cup.png",
+    "size": [
+      640,
+      640
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 255612
+  },
+  {
+    "file": "cocoa-garnish.png",
+    "size": [
+      192,
+      192
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 39296
+  },
+  {
+    "file": "paper-stack.png",
+    "size": [
+      500,
+      600
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 307945
+  },
+  {
+    "file": "hello.png",
+    "size": [
+      640,
+      640
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 445455
+  },
+  {
+    "file": "rain-1.png",
+    "size": [
+      192,
+      192
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 33276
+  },
+  {
+    "file": "rain-2.png",
+    "size": [
+      192,
+      192
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 33079
+  },
+  {
+    "file": "rain-3.png",
+    "size": [
+      192,
+      192
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 30154
+  },
+  {
+    "file": "rain-4.png",
+    "size": [
+      192,
+      192
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 32163
+  },
+  {
+    "file": "rain-5.png",
+    "size": [
+      192,
+      192
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 38672
+  },
+  {
+    "file": "rain-6.png",
+    "size": [
+      192,
+      192
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 29434
+  },
+  {
+    "file": "run-1.png",
+    "size": [
+      640,
+      400
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 104826
+  },
+  {
+    "file": "run-2.png",
+    "size": [
+      640,
+      400
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 97978
+  },
+  {
+    "file": "run-3.png",
+    "size": [
+      640,
+      400
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 101094
+  },
+  {
+    "file": "run-4.png",
+    "size": [
+      640,
+      400
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 92881
+  },
+  {
+    "file": "run-5.png",
+    "size": [
+      640,
+      400
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 98593
+  },
+  {
+    "file": "run-6.png",
+    "size": [
+      640,
+      400
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 100114
+  },
+  {
+    "file": "flail-1.png",
+    "size": [
+      768,
+      768
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 494620
+  },
+  {
+    "file": "flail-2.png",
+    "size": [
+      768,
+      768
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 489397
+  },
+  {
+    "file": "flail-3.png",
+    "size": [
+      768,
+      768
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 505325
+  },
+  {
+    "file": "flail-4.png",
+    "size": [
+      768,
+      768
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 524408
+  },
+  {
+    "file": "chaos-1.png",
+    "size": [
+      640,
+      480
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 202032
+  },
+  {
+    "file": "chaos-2.png",
+    "size": [
+      640,
+      480
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 202032
+  },
+  {
+    "file": "chaos-3.png",
+    "size": [
+      640,
+      480
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 202032
+  },
+  {
+    "file": "chaos-4.png",
+    "size": [
+      640,
+      480
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 202032
+  },
+  {
+    "file": "paper-1.png",
+    "size": [
+      160,
+      200
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 14922
+  },
+  {
+    "file": "paper-2.png",
+    "size": [
+      160,
+      200
+    ],
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "bytes": 9654
+  },
+  {
+    "file": "paper-3.png",
+    "size": [
+      160,
+      200
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 10479
+  },
+  {
+    "file": "paper-4.png",
+    "size": [
+      160,
+      200
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 25591
+  },
+  {
+    "file": "paper-5.png",
+    "size": [
+      160,
+      200
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 25800
+  }
+]
