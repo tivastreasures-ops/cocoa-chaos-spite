@@ -1,15 +1,75 @@
 [
   {
-    "file": "hydrate.png",
+    "file": "calculator-burst.png",
     "size": [
-      900,
-      700
+      800,
+      800
     ],
     "alphaExtrema": [
       0,
       255
     ],
-    "bytes": 555407
+    "bytes": 474927
+  },
+  {
+    "file": "calculator.png",
+    "size": [
+      640,
+      800
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 373714
+  },
+  {
+    "file": "chaos-1.png",
+    "size": [
+      640,
+      480
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 202032
+  },
+  {
+    "file": "chaos-2.png",
+    "size": [
+      640,
+      480
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 202032
+  },
+  {
+    "file": "chaos-3.png",
+    "size": [
+      640,
+      480
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 202032
+  },
+  {
+    "file": "chaos-4.png",
+    "size": [
+      640,
+      480
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 202032
   },
   {
     "file": "cocoa-cup.png",
@@ -36,16 +96,52 @@
     "bytes": 39296
   },
   {
-    "file": "paper-stack.png",
+    "file": "flail-1.png",
     "size": [
-      500,
-      600
+      768,
+      768
     ],
     "alphaExtrema": [
       0,
       255
     ],
-    "bytes": 307945
+    "bytes": 494620
+  },
+  {
+    "file": "flail-2.png",
+    "size": [
+      768,
+      768
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 489397
+  },
+  {
+    "file": "flail-3.png",
+    "size": [
+      768,
+      768
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 505325
+  },
+  {
+    "file": "flail-4.png",
+    "size": [
+      768,
+      768
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 524408
   },
   {
     "file": "hello.png",
@@ -58,6 +154,90 @@
       255
     ],
     "bytes": 445455
+  },
+  {
+    "file": "hydrate.png",
+    "size": [
+      900,
+      700
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 555407
+  },
+  {
+    "file": "paper-1.png",
+    "size": [
+      160,
+      200
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 14922
+  },
+  {
+    "file": "paper-2.png",
+    "size": [
+      160,
+      200
+    ],
+    "alphaExtrema": [
+      0,
+      254
+    ],
+    "bytes": 9654
+  },
+  {
+    "file": "paper-3.png",
+    "size": [
+      160,
+      200
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 10479
+  },
+  {
+    "file": "paper-4.png",
+    "size": [
+      160,
+      200
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 25591
+  },
+  {
+    "file": "paper-5.png",
+    "size": [
+      160,
+      200
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 25800
+  },
+  {
+    "file": "paper-stack.png",
+    "size": [
+      500,
+      600
+    ],
+    "alphaExtrema": [
+      0,
+      255
+    ],
+    "bytes": 307945
   },
   {
     "file": "rain-1.png",
@@ -202,161 +382,5 @@
       255
     ],
     "bytes": 100114
-  },
-  {
-    "file": "flail-1.png",
-    "size": [
-      768,
-      768
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 494620
-  },
-  {
-    "file": "flail-2.png",
-    "size": [
-      768,
-      768
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 489397
-  },
-  {
-    "file": "flail-3.png",
-    "size": [
-      768,
-      768
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 505325
-  },
-  {
-    "file": "flail-4.png",
-    "size": [
-      768,
-      768
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 524408
-  },
-  {
-    "file": "chaos-1.png",
-    "size": [
-      640,
-      480
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 202032
-  },
-  {
-    "file": "chaos-2.png",
-    "size": [
-      640,
-      480
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 202032
-  },
-  {
-    "file": "chaos-3.png",
-    "size": [
-      640,
-      480
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 202032
-  },
-  {
-    "file": "chaos-4.png",
-    "size": [
-      640,
-      480
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 202032
-  },
-  {
-    "file": "paper-1.png",
-    "size": [
-      160,
-      200
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 14922
-  },
-  {
-    "file": "paper-2.png",
-    "size": [
-      160,
-      200
-    ],
-    "alphaExtrema": [
-      0,
-      254
-    ],
-    "bytes": 9654
-  },
-  {
-    "file": "paper-3.png",
-    "size": [
-      160,
-      200
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 10479
-  },
-  {
-    "file": "paper-4.png",
-    "size": [
-      160,
-      200
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 25591
-  },
-  {
-    "file": "paper-5.png",
-    "size": [
-      160,
-      200
-    ],
-    "alphaExtrema": [
-      0,
-      255
-    ],
-    "bytes": 25800
   }
 ]
